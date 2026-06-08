@@ -1,0 +1,132 @@
+@model TicketCreateViewModel
+@{
+    ViewData["Title"] = "Create New Ticket";
+}
+
+<div class="page-header">
+    <div class="container-fluid">
+        <h1><i class="fas fa-plus-circle"></i> Create New Ticket</h1>
+        <p class="text-muted">Submit a new support ticket</p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <h5>Please correct the following errors:</h5>
+                                <ul>
+                                    @foreach (var modelState in ViewData.ModelState.Values)
+                                    {
+                                        @foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="mb-3">
+                            <label for="Title" class="form-label">Ticket Title <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="Title" name="Title" placeholder="Brief title of your issue" required>
+                            <small class="form-text text-muted">Provide a clear, concise title</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="ProjectName" class="form-label">Project Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="ProjectName" name="ProjectName" placeholder="e.g., Project Alpha" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="CategoryId" class="form-label">Category <span class="text-danger">*</span></label>
+                                <select class="form-select" id="CategoryId" name="CategoryId" required>
+                                    <option value="">-- Select Category --</option>
+                                    @foreach (var category in (IEnumerable<SelectListItem>)ViewBag.Categories)
+                                    {
+                                        <option value="@category.Value">@category.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="PriorityId" class="form-label">Priority <span class="text-danger">*</span></label>
+                                <select class="form-select" id="PriorityId" name="PriorityId" required>
+                                    <option value="">-- Select Priority --</option>
+                                    @foreach (var priority in (IEnumerable<SelectListItem>)ViewBag.Priorities)
+                                    {
+                                        <option value="@priority.Value">@priority.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="TargetResolutionDate" class="form-label">Expected Resolution Date</label>
+                                <input type="datetime-local" class="form-control" id="TargetResolutionDate" name="TargetResolutionDate">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Description" class="form-label">Description <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="Description" name="Description" rows="6" placeholder="Provide detailed description of your issue..." required></textarea>
+                            <small class="form-text text-muted">Include steps to reproduce, error messages, and any relevant details</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Attachments" class="form-label">Attachments</label>
+                            <input type="file" class="form-control" id="Attachments" name="Attachments" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif,.txt,.zip">
+                            <small class="form-text text-muted">Allowed: PDF, DOC, DOCX, JPG, PNG, GIF, TXT, ZIP (Max 5MB each)</small>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="/Tickets/Dashboard" class="btn btn-outline-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Ticket
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Tips</h5>
+                </div>
+                <div class="card-body">
+                    <h6>For Better Support:</h6>
+                    <ul>
+                        <li>Be specific and detailed</li>
+                        <li>Include error messages</li>
+                        <li>Attach screenshots if needed</li>
+                        <li>Mention your environment</li>
+                        <li>List steps to reproduce</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Response Times</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li><strong class="text-danger">Critical:</strong> 1-2 hours</li>
+                        <li><strong class="text-warning">High:</strong> 4-8 hours</li>
+                        <li><strong class="text-info">Medium:</strong> 1-2 days</li>
+                        <li><strong class="text-success">Low:</strong> 3-5 days</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

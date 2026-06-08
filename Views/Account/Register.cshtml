@@ -1,0 +1,90 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0"><i class="fas fa-user-plus"></i> Create Account</h2>
+                </div>
+                <div class="card-body p-5">
+                    <form method="post">
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Registration Error</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <ul>
+                                    @foreach (var modelState in ViewData.ModelState.Values)
+                                    {
+                                        @foreach (var error in modelState.Errors)
+                                        {
+                                            <li>@error.ErrorMessage</li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="FirstName" name="FirstName" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="LastName" name="LastName" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="Email" name="Email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="CompanyName" class="form-label">Company Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="CompanyName" name="CompanyName" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="PhoneNumber" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="PhoneNumber" name="PhoneNumber">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Password" class="form-label">Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="Password" name="Password" required>
+                            <small class="form-text text-muted">At least 6 characters, include uppercase, lowercase, and numbers</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="ConfirmPassword" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" id="ConfirmPassword" name="ConfirmPassword" required>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">
+                                I agree to the Terms and Conditions
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="fas fa-check"></i> Register
+                        </button>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <p class="text-center text-muted">
+                        Already have an account? <a href="/Account/Login" class="text-primary fw-bold">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

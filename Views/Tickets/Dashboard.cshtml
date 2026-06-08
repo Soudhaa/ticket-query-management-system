@@ -1,0 +1,131 @@
+@model List<Ticket>
+@{
+    ViewData["Title"] = "Dashboard";
+    var stats = (Dictionary<string, int>)ViewBag.Stats;
+}
+
+<div class="page-header">
+    <div class="container-fluid">
+        <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+        <p class="text-muted">Welcome back! Here's your ticket overview.</p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h3>@stats["Total"]</h3>
+                <p>Total Tickets</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h3 style="color: #e74c3c;">@stats["Open"]</h3>
+                <p>Open Tickets</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h3 style="color: #f39c12;">@stats["InProgress"]</h3>
+                <p>In Progress</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="stat-card">
+                <h3 style="color: #27ae60;">@stats["Resolved"]</h3>
+                <p>Resolved</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Recent Tickets</h5>
+                </div>
+                <div class="card-body p-0">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket #</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ticket in Model.Take(10))
+                                    {
+                                        <tr>
+                                            <td><strong>@ticket.TicketNumber</strong></td>
+                                            <td>@ticket.Title</td>
+                                            <td><span class="badge" style="background-color: #3498db; color: white;">@ticket.Category.Name</span></td>
+                                            <td>
+                                                <span class="priority-@ticket.Priority.Level.ToString().ToLower()">
+                                                    <i class="fas fa-exclamation-circle"></i> @ticket.Priority.Description
+                                                </span>
+                                            </td>
+                                            <td><span class="status-badge status-@ticket.Status.ToString().ToLower()">@ticket.Status</span></td>
+                                            <td>@ticket.CreatedAt.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                <a href="/Tickets/Details/@ticket.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info m-3">
+                            <i class="fas fa-info-circle"></i> No tickets found. <a href="/Tickets/Create">Create one now!</a>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer text-end">
+                    <a href="#" class="btn btn-sm btn-primary">View All Tickets <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/Tickets/Create" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-plus"></i> New Ticket
+                    </a>
+                    <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-search"></i> Search
+                    </a>
+                    <a href="/Account/Profile" class="btn btn-outline-primary w-100">
+                        <i class="fas fa-user"></i> My Profile
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-information-circle"></i> Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p>Having issues? Check our help center or contact support.</p>
+                    <button class="btn btn-sm btn-outline-info w-100">Contact Support</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

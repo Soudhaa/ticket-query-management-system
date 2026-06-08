@@ -1,0 +1,214 @@
+@model Ticket
+@{
+    ViewData["Title"] = $"Ticket {Model.TicketNumber}";
+}
+
+<div class="page-header">
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1><i class="fas fa-ticket-alt"></i> @Model.TicketNumber</h1>
+                <p class="text-muted">@Model.Title</p>
+            </div>
+            <div>
+                <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Ticket Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-info-circle"></i> Ticket Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Category:</strong> <span class="badge" style="background-color: #3498db;">@Model.Category.Name</span></p>
+                            <p><strong>Priority:</strong> <span class="priority-@Model.Priority.Level.ToString().ToLower()"><i class="fas fa-exclamation-circle"></i> @Model.Priority.Description</span></p>
+                            <p><strong>Project:</strong> @Model.ProjectName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Created:</strong> @Model.CreatedAt.ToString("MMM dd, yyyy HH:mm")</p>
+                            <p><strong>Last Updated:</strong> @(Model.UpdatedAt?.ToString("MMM dd, yyyy HH:mm") ?? "N/A")</p>
+                            <p><strong>Views:</strong> @Model.ViewCount</p>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6>Description:</h6>
+                    <div class="bg-light p-3 rounded">
+                        @Html.Raw(Model.Description.Replace("\n", "<br/>"))
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.ResolutionNotes))
+                    {
+                        <hr>
+                        <h6 class="text-success"><i class="fas fa-check-circle"></i> Resolution Notes:</h6>
+                        <div class="bg-light p-3 rounded border-left border-success">
+                            @Html.Raw(Model.ResolutionNotes.Replace("\n", "<br/>"))
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Attachments -->
+            @if (Model.Attachments.Any())
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-paperclip"></i> Attachments (@Model.Attachments.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var attachment in Model.Attachments)
+                            {
+                                <div class="col-md-6 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            @if (attachment.IsImage())
+                                            {
+                                                <img src="@attachment.FilePath" alt="@attachment.FileName" class="img-fluid rounded mb-2" style="max-height: 200px;">
+                                            }
+                                            <p class="card-text text-truncate"><strong>@attachment.FileName</strong></p>
+                                            <small class="text-muted">@(attachment.FileSize / 1024.0).ToString("F2") KB</small><br>
+                                            <small class="text-muted">Uploaded: @attachment.UploadedAt.ToString("MMM dd, yyyy")</small><br>
+                                            <a href="/files/@attachment.FilePath" class="btn btn-sm btn-outline-primary mt-2" download>
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Comments -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-comments"></i> Comments (@Model.Comments.Count)</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Comments.Any())
+                    {
+                        <div class="comments-section" style="max-height: 500px; overflow-y: auto;">
+                            @foreach (var comment in Model.Comments)
+                            {
+                                <div class="card mb-3 border-0 bg-light">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="card-title mb-1">
+                                                    @comment.User.FirstName @comment.User.LastName
+                                                    @if (comment.IsInternalNote)
+                                                    {
+                                                        <span class="badge bg-warning text-dark">Internal Note</span>
+                                                    }
+                                                    @if (comment.IsResolutionNote)
+                                                    {
+                                                        <span class="badge bg-success">Resolution</span>
+                                                    }
+                                                </h6>
+                                                <small class="text-muted">@comment.CreatedAt.ToString("MMM dd, yyyy HH:mm")</small>
+                                            </div>
+                                        </div>
+                                        <p class="card-text mt-2">@Html.Raw(comment.Comment.Replace("\n", "<br/>"))</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No comments yet. Be the first to comment!</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Add Comment Form -->
+            @if (Model.Status != TicketStatus.Closed)
+            {
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Add Comment</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="/Tickets/AddComment">
+                            <input type="hidden" name="ticketId" value="@Model.Id" />
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea class="form-control" id="comment" name="comment" rows="4" placeholder="Enter your comment..." required></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="isInternalNote" name="isInternalNote">
+                                <label class="form-check-label" for="isInternalNote">
+                                    Mark as internal note (only visible to team)
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Post Comment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Client Info -->
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-user"></i> Client</h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="avatar" style="width: 60px; height: 60px; font-size: 1.5rem; margin: 0 auto 10px;">
+                        @Model.Client.FirstName[0]
+                    </div>
+                    <h6>@Model.Client.FirstName @Model.Client.LastName</h6>
+                    <p class="text-muted mb-1">@Model.Client.Email</p>
+                    <p class="text-muted">@Model.Client.CompanyName</p>
+                </div>
+            </div>
+
+            <!-- Assigned To -->
+            @if (Model.AssignedTo != null)
+            {
+                <div class="card mb-4">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-user-tie"></i> Assigned To</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="avatar" style="width: 60px; height: 60px; font-size: 1.5rem; margin: 0 auto 10px;">
+                            @Model.AssignedTo.FirstName[0]
+                        </div>
+                        <h6>@Model.AssignedTo.FirstName @Model.AssignedTo.LastName</h6>
+                        <p class="text-muted">@Model.AssignedTo.Email</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Actions -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0"><i class="fas fa-cog"></i> Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/Tickets/Edit/@Model.Id" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-edit"></i> Edit Ticket
+                    </a>
+                    <a href="/Tickets/Dashboard" class="btn btn-outline-secondary w-100">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

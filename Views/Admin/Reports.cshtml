@@ -1,0 +1,118 @@
+@model ReportViewModel
+@{
+    ViewData["Title"] = "Reports";
+}
+
+<div class="page-header">
+    <div class="container-fluid">
+        <h1><i class="fas fa-chart-bar"></i> Reports</h1>
+        <p class="text-muted">System statistics and analytics</p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>@Model.TotalTickets</h3>
+                <p>Total Tickets</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3 style="color: #e74c3c;">@Model.OpenTickets</h3>
+                <p>Open Tickets</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3 style="color: #f39c12;">@Model.InProgressTickets</h3>
+                <p>In Progress</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3 style="color: #27ae60;">@Model.ResolvedTickets</h3>
+                <p>Resolved</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Tickets by Priority</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            @foreach (var priority in Model.TicketsByPriority)
+                            {
+                                <tr>
+                                    <td>@priority.Key</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: @(priority.Value * 100 / Model.TotalTickets)%">@priority.Value</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Tickets by Category</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                            @foreach (var category in Model.TicketsByCategory)
+                            {
+                                <tr>
+                                    <td>@category.Key</td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" style="width: @(category.Value * 100 / Model.TotalTickets)%">@category.Value</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-clock"></i> Ticket Status Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <h6>Average Resolution Time</h6>
+                            <h3>@Model.AverageResolutionTime.ToString("F1") hours</h3>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Closed Tickets</h6>
+                            <h3>@Model.ClosedTickets</h3>
+                        </div>
+                        <div class="col-md-4">
+                            <h6>Resolution Rate</h6>
+                            <h3>@(Model.TotalTickets > 0 ? ((Model.ResolvedTickets + Model.ClosedTickets) * 100 / Model.TotalTickets).ToString("F1") : "0")%</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

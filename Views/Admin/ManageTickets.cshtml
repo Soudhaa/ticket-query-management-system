@@ -1,0 +1,74 @@
+@model List<Ticket>
+@{
+    ViewData["Title"] = "Manage Tickets";
+}
+
+<div class="page-header">
+    <div class="container-fluid">
+        <h1><i class="fas fa-ticket-alt"></i> Manage Tickets</h1>
+        <p class="text-muted">View and manage all support tickets</p>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <form method="get" class="d-flex gap-2">
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">-- All Status --</option>
+                    <option value="1">Open</option>
+                    <option value="2">In Progress</option>
+                    <option value="3">On Hold</option>
+                    <option value="4">Resolved</option>
+                    <option value="5">Closed</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary">Filter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-list"></i> All Tickets (@Model.Count)</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>Ticket #</th>
+                            <th>Title</th>
+                            <th>Client</th>
+                            <th>Category</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Created</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ticket in Model)
+                        {
+                            <tr>
+                                <td><strong>@ticket.TicketNumber</strong></td>
+                                <td>@ticket.Title</td>
+                                <td>@ticket.Client.FirstName @ticket.Client.LastName</td>
+                                <td><span class="badge" style="background-color: #3498db;">@ticket.Category.Name</span></td>
+                                <td><span class="priority-@ticket.Priority.Level.ToString().ToLower()">@ticket.Priority.Description</span></td>
+                                <td><span class="status-badge status-@ticket.Status.ToString().ToLower()">@ticket.Status</span></td>
+                                <td>@(ticket.AssignedTo?.FirstName + " " + ticket.AssignedTo?.LastName ?? "Unassigned")</td>
+                                <td>@ticket.CreatedAt.ToString("MMM dd")</td>
+                                <td>
+                                    <a href="/Tickets/Details/@ticket.Id" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
